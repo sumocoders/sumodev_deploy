@@ -41,11 +41,9 @@ configuration.load do
       desc "Installs the redirect page for the site"
       task :put, :roles => :app do
         unless exists?(:production_url)
-          $stderr.puts <<-ERROR
-Define the production_url-variable in your Capfile:
-    set :production_url, \"http://example.com\"
-          ERROR
-          exit 1
+          fetch(:production_url) do
+            Capistrano::CLI.ui.ask "What is the production url?"
+          end
         end
 
         run %{
@@ -55,7 +53,7 @@ Define the production_url-variable in your Capfile:
         }
 
         # change the url
-        run "if [ -f #{shared_path}/redirect/index.php ]; then sed -i 's/<real-url>/#{production_url}/' #{shared_path}/redirect/index.php; fi"
+        run "if [ -f #{shared_path}/redirect/index.php ]; then sed -i 's/<real-url>/#{production_url.gsub(/['"\\\x0]/,'\\\\\0')}/' #{shared_path}/redirect/index.php; fi"
 
         run %{
           rm -f #{current_path} &&
