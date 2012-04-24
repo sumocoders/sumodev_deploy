@@ -37,6 +37,20 @@ configuration.load do
         run "info_db #{db_name}"
       end
     end
+    
+    namespace :files do
+      desc "Will sync all remote files to your local install"
+      task :get, :roles => :app do
+        # check if folder exists, @todo Defv would it be possible to "find" the folder by looping the parent folders?
+        path="./frontend/files"
+        if !(File.exists?(path) && File.directory?(path))
+            raise "The folder ./frontend/files isn't found, execute this task in the root of your project."
+        else
+            system %{rsync -r #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
+        end
+      end
+    end
+    
     namespace :redirect do
       desc "Installs the redirect page for the site"
       task :put, :roles => :app do
