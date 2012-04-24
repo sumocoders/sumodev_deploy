@@ -39,7 +39,7 @@ configuration.load do
     end
     
     namespace :files do
-      desc "Will sync all remote files to your local install"
+      desc "Sync all remote files to your local install"
       task :get, :roles => :app do
         # check if folder exists, @todo Defv would it be possible to "find" the folder by looping the parent folders?
         path="./frontend/files"
