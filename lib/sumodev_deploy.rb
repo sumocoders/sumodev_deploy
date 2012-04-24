@@ -49,6 +49,20 @@ configuration.load do
             system %{rsync -r #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
         end
       end
+
+      desc "Sync your local files to the remote server"
+      task :put, :roles => :app do
+        # create a backup on the remote, store it under the release-folder, so it will be automagically removed
+        run %{tar -cf #{current_path}/backup_files.tar #{shared_path}/files}
+
+        # check if folder exists
+        path="./frontend/files/"
+        if !(File.exists?(path) && File.directory?(path))
+            raise "The folder ./frontend/files isn't found, execute this task in the root of your project."
+        else
+          system %{rsync -r #{path} #{user}@dev.sumocoders.eu:#{shared_path}/files}
+        end
+      end
     end
     
     namespace :redirect do
