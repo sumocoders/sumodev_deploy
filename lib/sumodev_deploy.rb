@@ -32,6 +32,12 @@ configuration.load do
         run "create_db #{db_name}"
       end
 
+      desc "Imports the database from the server into your local database"
+      task :get, :roles => :db do
+        system %{mysqladmin create #{db_name}}
+        system %{ssh sites@dev.sumocoders.eu mysqldump --set-charset #{db_name} | mysql #{db_name}}
+      end
+
       desc "Get database info"
       task :info, :roles => :db do
         run "info_db #{db_name}"
