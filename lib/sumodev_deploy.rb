@@ -45,6 +45,7 @@ configuration.load do
 
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db do
+        system %{ssh sites@dev.sumocoders.eu "mysqldump --set-charset #{$db_name} > #{current_path}/#{release_name}.sql" }
       	system %{mysqldump --set-charset #{db_name} | ssh sites@dev.sumocoders.eu mysql #{db_name}}
       end
     end
