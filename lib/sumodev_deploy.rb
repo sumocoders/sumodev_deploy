@@ -78,7 +78,7 @@ configuration.load do
       desc "Sync your local files to the remote server"
       task :put, :roles => :app do
         # create a backup on the remote, store it under the release-folder, so it will be automagically removed
-        run %{cd #{shared_path} && tar -cf #{current_path}/backup_files.tar files}
+        run %{cd #{shared_path} && tar -czf #{current_path}/backup_files.tgz files}
 
         # check if folder exists
         path = find_folder_in_parents('frontend/files')
