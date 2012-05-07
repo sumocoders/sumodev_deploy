@@ -71,7 +71,7 @@ configuration.load do
         if !path
             raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-            system %{rsync -r #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
+            system %{rsync -rltp #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
         end
       end
 
@@ -85,7 +85,7 @@ configuration.load do
         if !path
             raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          system %{rsync -r #{path} #{user}@dev.sumocoders.eu:#{shared_path}/files}
+          system %{rsync -rltp #{path} #{user}@dev.sumocoders.eu:#{shared_path}/files}
         end
       end
     end
