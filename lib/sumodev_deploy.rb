@@ -53,12 +53,24 @@ configuration.load do
     end
     
     namespace :files do
+      def find_folder_in_parents(folder)
+        require 'pathname'
+
+        path = Pathname.pwd
+        begin
+          found = Pathname.glob(path + folder)
+          return found.first if found.any?
+
+          path = path.parent
+        end until path.root?
+      end
+
       desc "Sync all remote files to your local install"
       task :get, :roles => :app do
         # check if folder exists, @todo Defv would it be possible to "find" the folder by looping the parent folders?
-        path="./frontend/files"
-        if !(File.exists?(path) && File.directory?(path))
-            raise "The folder ./frontend/files isn't found, execute this task in the root of your project."
+        path = find_folder_in_parents('frontend/files')
+        if !path
+            raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
             system %{rsync -r #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
         end
@@ -70,9 +82,9 @@ configuration.load do
         run %{tar -cf #{current_path}/backup_files.tar #{shared_path}/files}
 
         # check if folder exists
-        path="./frontend/files/"
-        if !(File.exists?(path) && File.directory?(path))
-            raise "The folder ./frontend/files isn't found, execute this task in the root of your project."
+        path = find_folder_in_parents('frontend/files')
+        if !path
+            raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
           system %{rsync -r #{path} #{user}@dev.sumocoders.eu:#{shared_path}/files}
         end
