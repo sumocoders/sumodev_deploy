@@ -67,7 +67,6 @@ configuration.load do
 
       desc "Sync all remote files to your local install"
       task :get, :roles => :app do
-        # check if folder exists, @todo Defv would it be possible to "find" the folder by looping the parent folders?
         path = find_folder_in_parents('frontend/files')
         if !path
             raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
