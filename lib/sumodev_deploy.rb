@@ -106,7 +106,7 @@ configuration.load do
         }
 
         # change the url
-        run "if [ -f #{shared_path}/redirect/index.php ]; then sed -i 's/<real-url>/#{production_url.gsub(/['"\\\x0]/,'\\\\\0')}/' #{shared_path}/redirect/index.php; fi"
+        run "if [ -f #{shared_path}/redirect/index.php ]; then sed -i 's|<real-url>|#{production_url}|' #{shared_path}/redirect/index.php; fi"
 
         run %{
           rm -f #{current_path} &&
