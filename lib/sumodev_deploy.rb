@@ -17,13 +17,18 @@ configuration.load do
   def db_name
     fetch(:db_name) { "#{client[0,8]}_#{project[0,7]}"}
   end
+  
+  def production_server
+  	self[:production_server] || "dev.sumocoders.eu"
+  end
+  
 
   set :user, 'sites'
   set :application, project
   set :deploy_to,"/home/sites/apps/#{client}/#{application}"
   set :document_root, "/home/sites/#{client}/#{application}"
 
-  server 'dev.sumocoders.eu', :app, :web, :db, :primary => true
+  server "#{production_server}", :app, :web, :db, :primary => true
 
   namespace :sumodev do
     namespace :db do
