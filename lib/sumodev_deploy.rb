@@ -1,34 +1,34 @@
 configuration = Capistrano::Configuration.respond_to?(:instance) ? Capistrano::Configuration.instance(:must_exist) : Capistrano.configuration(:must_exist)
 
 configuration.load do
-  def stop(msg)
-    puts "\nStopped! \n\treason: #{msg}"
-    exit 1
+  def _cset(name, *args, &block)
+    unless exists?(name)
+      set(name, *args, &block)
+    end
   end
 
-  def client
-    self[:client] || stop("sumodev_deploy requires that you set client and project names in your capfile")
-  end
+  _cset(:client)  { abort "sumodev_deploy requires that you set client and project names in your capfile" }
+  _cset(:project) { abort "sumodev_deploy requires that you set client and project names in your capfile"}
 
-  def project
-    self[:project] || stop("sumodev_deploy requires that you set client and project names in your capfile")
-  end
+  _cset(:db_name) { "#{client[0,8]}_#{project[0,7]}"}
 
-  def db_name
-    fetch(:db_name) { "#{client[0,8]}_#{project[0,7]}"}
-  end
-  
-  def production_server
-  	self[:production_server] || "dev.sumocoders.eu"
-  end
-  
+  _cset(:staging_server, 'dev.sumocoders.be')
+  _cset(:production_server, nil)
+  _cset(:app_servers) { production_server || staging_server }
+  _cset(:web_servers) { production_server || staging_server }
+  _cset(:db_server)   { production_server || staging_server }
 
-  set :user, 'sites'
-  set :application, project
-  set :deploy_to,"/home/sites/apps/#{client}/#{application}"
-  set :document_root, "/home/sites/#{client}/#{application}"
+  _cset(:user, 'sites')
+  _cset(:homedir) { "/home/#{user}/" }
+  _cset(:app_path) { "apps/#{client}/#{project}" }
+  _cset(:document_root) { "#{homedir}#{client}/#{project}" }
 
-  server "#{production_server}", :app, :web, :db, :primary => true
+  set(:application) { project }
+  set(:deploy_to) { "#{homedir}#{app_path}"}
+
+  role(:app) { app_servers }
+  role(:web) { web_servers }
+  role(:db, :primary => true) { db_server }
 
   namespace :sumodev do
     namespace :db do
