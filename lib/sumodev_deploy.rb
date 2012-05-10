@@ -35,7 +35,7 @@ configuration.load do
       desc "Imports the database from the server into your local database"
       task :get, :roles => :db do
         # @todo Defv would be nice if this also worked on production server. I think we need some extra vars in the capfile for username, password and host. by default these can be the values used on the dev-server.
-        system %{mysqladmin create #{db_name}}
+        system %{mysqladmin create #{db_name}}	# @todo Defv ignore errors
         system %{ssh sites@dev.sumocoders.eu mysqldump --set-charset #{db_name} | mysql #{db_name}}
       end
 
