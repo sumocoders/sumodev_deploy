@@ -21,7 +21,7 @@ configuration.load do
   _cset(:user, 'sites')
   _cset(:homedir) { "/home/#{user}/" }
   _cset(:app_path) { "apps/#{client}/#{project}" }
-  _cset(:shared_files_path) { "#{shared_path}/files"}
+  _cset(:shared_files_path) { "#{shared_path}/files/"}
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
 
   set(:application) { project }
@@ -74,13 +74,30 @@ configuration.load do
         end until path.root?
       end
 
+      def rsync(direction, from, to, options = {})
+        servers = find_servers_for_task(current_task)
+        servers = [servers.first] if options[:once]
+
+        servers.each do |server|
+          host_definition = "#{server.user || user}@#{server.host}"
+          host_definition << ":#{server.port}" if server.port && server.port != 22
+
+          case direction
+          when :down
+            run_locally "rsync -rtlpv #{host_definition}:#{from} #{to}"
+          when :up
+            run_locally "rsync -rtlp #{from} #{host_definition}:#{to}"
+          end
+        end
+      end
+
       desc "Sync all remote files to your local install"
       task :get, :roles => :app do
         path = find_folder_in_parents('frontend/files')
         if !path
           abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          download shared_files_path, path.to_s, :recursive => true
+          rsync :down, shared_files_path, path, :once => true
         end
       end
 
@@ -94,7 +111,7 @@ configuration.load do
         if !path
           abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          upload path.to_s, shared_files_path, :recursive => true, :via => :scp
+          rsync :up, "#{path}/", shared_files_path
         end
       end
     end
