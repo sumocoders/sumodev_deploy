@@ -94,7 +94,7 @@ configuration.load do
         if !path
           abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          upload path.to_s, shared_files_path, :recursive => true
+          upload path.to_s, shared_files_path, :recursive => true, :via => :scp
         end
       end
     end
