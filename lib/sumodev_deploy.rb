@@ -39,14 +39,13 @@ configuration.load do
       
       desc "Dump the remote database, and outputs the content so you can pipe it"
       task :dump, :roles => :db do
-      	system %{ssh sites@dev.sumocoders.eu mysqldump --set-charset #{db_name}}
+        system %{ssh sites@#{db_server} mysqldump --set-charset #{db_name}}
       end
 
       desc "Imports the database from the server into your local database"
       task :get, :roles => :db do
-        # @todo Defv would be nice if this also worked on production server. I think we need some extra vars in the capfile for username, password and host. by default these can be the values used on the dev-server.
         system %{mysqladmin create #{db_name}}	# @todo Defv ignore errors
-        system %{ssh sites@dev.sumocoders.eu mysqldump --set-charset #{db_name} | mysql #{db_name}}
+        system %{ssh sites@#{db_server} mysqldump --set-charset #{db_name} | mysql #{db_name}}
       end
 
       desc "Get database info"
@@ -56,9 +55,8 @@ configuration.load do
 
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db do
-        # @todo Defv would be nice if this also worked on production server. I think we need some extra vars in the capfile for username, password and host. by default these can be the values used on the dev-server.
-        system %{ssh sites@dev.sumocoders.eu "mysqldump --set-charset #{$db_name} > #{current_path}/#{release_name}.sql" }
-      	system %{mysqldump --set-charset #{db_name} | ssh sites@dev.sumocoders.eu mysql #{db_name}}
+        system %{ssh sites@#{db_server} "mysqldump --set-charset #{$db_name} > #{current_path}/#{release_name}.sql" }
+        system %{mysqldump --set-charset #{db_name} | ssh sites@#{db_server} #{db_name}}
       end
     end
     
@@ -81,7 +79,8 @@ configuration.load do
         if !path
             raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-            system %{rsync -rltp #{user}@dev.sumocoders.eu:#{shared_path}/files/ #{path}}
+          # @todo	Defv use primary?
+          system %{rsync -rltp #{user}@#{web_servers.first}:#{shared_path}/files/ #{path}}
         end
       end
 
@@ -95,7 +94,8 @@ configuration.load do
         if !path
             raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          system %{rsync -rltp #{path} #{user}@dev.sumocoders.eu:#{shared_path}/files}
+          # @todo	Defv use primary?
+          system %{rsync -rltp #{path} #{user}@#{web_servers.first}:#{shared_path}/files}
         end
       end
     end
