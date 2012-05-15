@@ -36,6 +36,11 @@ configuration.load do
       task :create, :roles => :db do
         run "create_db #{db_name}"
       end
+      
+      desc "Dump the remote database, and outputs the content so you can pipe it"
+      task :dump, :roles => :db do
+      	system %{ssh sites@dev.sumocoders.eu mysqldump --set-charset #{db_name}}
+      end
 
       desc "Imports the database from the server into your local database"
       task :get, :roles => :db do
