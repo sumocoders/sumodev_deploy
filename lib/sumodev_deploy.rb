@@ -21,6 +21,7 @@ configuration.load do
   _cset(:user, 'sites')
   _cset(:homedir) { "/home/#{user}/" }
   _cset(:app_path) { "apps/#{client}/#{project}" }
+  _cset(:shared_files_path) { "#{shared_path}/files"}
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
 
   set(:application) { project }
@@ -79,8 +80,7 @@ configuration.load do
         if !path
           abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          # @todo	Defv use primary?
-          system %{rsync -rltp #{user}@#{web_servers.first}:#{shared_path}/files/ #{path}}
+          download shared_files_path, path.to_s, :recursive => true
         end
       end
 
@@ -94,8 +94,7 @@ configuration.load do
         if !path
           abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
-          # @todo	Defv use primary?
-          system %{rsync -rltp #{path} #{user}@#{web_servers.first}:#{shared_path}/files}
+          upload path.to_s, shared_files_path, :recursive => true
         end
       end
     end
