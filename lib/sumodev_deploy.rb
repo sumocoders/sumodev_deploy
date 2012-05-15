@@ -77,7 +77,7 @@ configuration.load do
       task :get, :roles => :app do
         path = find_folder_in_parents('frontend/files')
         if !path
-          raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+          abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
           # @todo	Defv use primary?
           system %{rsync -rltp #{user}@#{web_servers.first}:#{shared_path}/files/ #{path}}
@@ -92,7 +92,7 @@ configuration.load do
         # check if folder exists
         path = find_folder_in_parents('frontend/files')
         if !path
-          raise "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+          abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
           # @todo	Defv use primary?
           system %{rsync -rltp #{path} #{user}@#{web_servers.first}:#{shared_path}/files}
