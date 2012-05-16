@@ -40,7 +40,13 @@ configuration.load do
       
       desc "Dump the remote database, and outputs the content so you can pipe it"
       task :dump, :roles => :db do
-        system %{ssh sites@#{db_server} mysqldump --set-charset #{db_name}}
+        run "mysqldump --set-charset #{db_name}" do |ch, stream, out|
+          if stream == :err
+            ch[:options][:logger].send(:important, out, "#{stream} :: #{ch[:server]}" )
+          else
+            print out
+          end
+        end
       end
 
       desc "Imports the database from the server into your local database"
