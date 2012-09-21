@@ -32,7 +32,7 @@ configuration.load do
   role(:web) { web_servers }
   role(:db, :primary => true) { db_server }
 
-  after 'deploy', 'deploy:cleanup', 'sumodev:errbit:update_api_key'
+  after 'deploy', 'deploy:cleanup', 'sumodev:errbit:after_deploy'
 
   namespace :sumodev do
     namespace :db do
@@ -89,6 +89,10 @@ configuration.load do
     end
 
     namespace :errbit do
+      task :after_deploy, :rolse => :app do
+        update_api_key
+        notify
+      end
       desc "Updates the Errbit API key"
       task :update_api_key, :roles => :app do
         run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
