@@ -32,16 +32,9 @@ configuration.load do
   role(:web) { web_servers }
   role(:db, :primary => true) { db_server }
 
-  after 'deploy', 'deploy:cleanup', 'sumodev:config:update_errbit_api_key'
+  after 'deploy', 'deploy:cleanup', 'sumodev:errbit:update_api_key'
 
   namespace :sumodev do
-    namespace :config do
-      desc "Updates the Errbit API key"
-      task :update_errbit_api_key, :roles => :app do
-        run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
-      end
-    end
-
     namespace :db do
       desc "Create the database. Reads :db_name variable, or it is composed from client / project"
       task :create, :roles => :db do
@@ -92,6 +85,13 @@ configuration.load do
           mysql #{db_name} < #{dump_path} &&
           rm #{dump_path}
         }
+      end
+    end
+
+    namespace :errbit do
+      desc "Updates the Errbit API key"
+      task :update_api_key, :roles => :app do
+        run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
       end
     end
 
