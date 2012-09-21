@@ -93,6 +93,21 @@ configuration.load do
       task :update_api_key, :roles => :app do
         run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
       end
+      desc "Notify Errbit about a dqeploy"
+      task :notify, :roles => :app do
+        require 'active_support/core_ext/object'
+
+        parameters = {
+          :api_key => production_errbit_api_key,
+          :deploy => {
+            :rails_env => stage,
+            :local_username => ENV["USER"],
+            :scm_repository => repository,
+            :scm_revision => current_revision
+          }
+        }
+        run_locally "curl -d '#{parameters.to_query}' https://errors.sumocoders.be/deploys.txt"
+      end
     end
 
     namespace :files do
