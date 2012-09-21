@@ -95,10 +95,12 @@ configuration.load do
       end
       desc "Updates the Errbit API key"
       task :update_api_key, :roles => :app do
+        next if fetch(:production_errbit_api_key, "").empty?
         run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
       end
       desc "Notify Errbit about a dqeploy"
       task :notify, :roles => :app do
+        next if fetch(:production_errbit_api_key, "").empty?
         require 'active_support/core_ext/object'
 
         parameters = {
