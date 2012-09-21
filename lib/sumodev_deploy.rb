@@ -23,7 +23,7 @@ configuration.load do
   _cset(:app_path) { "apps/#{client}/#{project}" }
   _cset(:shared_files_path) { "#{shared_path}/files/"}
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
-  _cset(:keep_releases) { fetch(:stage, 'production').intern == :staging ? 1 : 3 }
+  _cset(:keep_releases) { fetch(:stage, 'production').to_sym == :staging ? 1 : 3 }
 
   set(:application) { project }
   set(:deploy_to) { "#{homedir}#{app_path}"}
