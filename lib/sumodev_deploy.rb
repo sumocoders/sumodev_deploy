@@ -54,10 +54,16 @@ configuration.load do
 
       desc "Imports the database from the server into your local database"
       task :get, :roles => :db do
+		real_db_name = (stage.to_sym == :production and !fetch(:production_db, "").empty?) ? production_db : db_name
+		options = ""
+		if !fetch(:db_host, "").empty? then options += "--host #{db_host} " end
+		if !fetch(:db_username, "").empty? then options += "--user=#{db_username} " end
+		if !fetch(:db_password, "").empty? then options += "--password=#{db_password} " end
+
         run_locally %{mysqladmin create #{db_name}} rescue nil
 
         mysql = IO.popen("mysql #{db_name}", 'r+')
-        run "mysqldump --set-charset #{db_name}" do |ch, stream, out|
+        run "mysqldump --set-charset #{options} #{real_db_name}" do |ch, stream, out|
           if stream == :err
             ch[:options][:logger].send(:important, out, "#{stream} :: #{ch[:server]}" )
           else
@@ -76,13 +82,20 @@ configuration.load do
 
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db, :only => {:primary => true} do
-        run "mysqldump --set-charset #{db_name} > #{current_path}/#{release_name}.sql" rescue nil
+		real_db_name = (stage.to_sym == :production and !fetch(:production_db, "").empty?) ? production_db : db_name
+		options = ""
+		if !fetch(:db_host, "").empty? then options += "--host #{db_host} " end
+		if !fetch(:db_username, "").empty? then options += "--user=#{db_username} " end
+		if !fetch(:db_password, "").empty? then options += "--password=#{db_password} " end
+
+        run "mysqldump --set-charset #{options} #{real_db_name} > #{current_path}/#{release_name}.sql" rescue nil
 
         dump = StringIO.new(run_locally "mysqldump --set-charset #{db_name}")
         dump_path = "#{shared_path}/db_upload.tmp.sql"
         upload dump, dump_path
+
         run %{
-          mysql #{db_name} < #{dump_path} &&
+          mysql #{options} #{real_db_name} < #{dump_path} &&
           rm #{dump_path}
         }
       end
