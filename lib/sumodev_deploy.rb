@@ -7,6 +7,14 @@ configuration.load do
     end
   end
 
+  def staging?
+    fetch(:stage, '').to_sym == :staging
+  end
+
+  def production?
+    fetch(:stage, '').to_sym == :production
+  end
+
   _cset(:client)  { abort "sumodev_deploy requires that you set client and project names in your capfile" }
   _cset(:project) { abort "sumodev_deploy requires that you set client and project names in your capfile"}
 
@@ -23,7 +31,7 @@ configuration.load do
   _cset(:app_path) { "apps/#{client}/#{project}" }
   _cset(:shared_files_path) { "#{shared_path}/files/"}
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
-  _cset(:keep_releases) { fetch(:stage, 'production').to_sym == :staging ? 1 : 3 }
+  _cset(:keep_releases) { staging? ? 1 : 3 }
 
   set(:application) { project }
   set(:deploy_to) { "#{homedir}#{app_path}"}
@@ -36,6 +44,20 @@ configuration.load do
 
   namespace :sumodev do
     namespace :db do
+      def remote_db_name
+        production? && !fetch(:production_db, '').empty? ?
+          production_db :
+          db_name
+      end
+
+      def remote_db_options
+        {:db_host => 'host', :db_username => 'user', :db_password => 'password'}.inject('') do |options, (key, param)|
+          value = fetch(key, '')
+          options << "--#{param}=#{value} " unless value.empty?
+          options
+        end
+      end
+
       desc "Create the database. Reads :db_name variable, or it is composed from client / project"
       task :create, :roles => :db do
         run "create_db #{db_name}"
@@ -54,16 +76,10 @@ configuration.load do
 
       desc "Imports the database from the server into your local database"
       task :get, :roles => :db do
-		real_db_name = (stage.to_sym == :production and !fetch(:production_db, "").empty?) ? production_db : db_name
-		options = ""
-		if !fetch(:db_host, "").empty? then options += "--host #{db_host} " end
-		if !fetch(:db_username, "").empty? then options += "--user=#{db_username} " end
-		if !fetch(:db_password, "").empty? then options += "--password=#{db_password} " end
-
         run_locally %{mysqladmin create #{db_name}} rescue nil
 
         mysql = IO.popen("mysql #{db_name}", 'r+')
-        run "mysqldump --set-charset #{options} #{real_db_name}" do |ch, stream, out|
+        run "mysqldump --set-charset #{remote_db_options} #{remote_db_name}" do |ch, stream, out|
           if stream == :err
             ch[:options][:logger].send(:important, out, "#{stream} :: #{ch[:server]}" )
           else
@@ -82,13 +98,7 @@ configuration.load do
 
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db, :only => {:primary => true} do
-		real_db_name = (stage.to_sym == :production and !fetch(:production_db, "").empty?) ? production_db : db_name
-		options = ""
-		if !fetch(:db_host, "").empty? then options += "--host #{db_host} " end
-		if !fetch(:db_username, "").empty? then options += "--user=#{db_username} " end
-		if !fetch(:db_password, "").empty? then options += "--password=#{db_password} " end
-
-        run "mysqldump --set-charset #{options} #{real_db_name} > #{current_path}/#{release_name}.sql" rescue nil
+        run "mysqldump --set-charset #{remote_db_options} #{remote_db_name} > #{current_path}/#{release_name}.sql" rescue nil
 
         dump = StringIO.new(run_locally "mysqldump --set-charset #{db_name}")
         dump_path = "#{shared_path}/db_upload.tmp.sql"
