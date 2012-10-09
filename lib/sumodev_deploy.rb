@@ -98,14 +98,14 @@ configuration.load do
 
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db, :only => {:primary => true} do
-        run "mysqldump --set-charset #{remote_db_options} #{remote_db_name} > #{current_path}/#{release_name}.sql" rescue nil
+        run "mysqldump --set-charset #{db_name} > #{current_path}/#{release_name}.sql" rescue nil
 
         dump = StringIO.new(run_locally "mysqldump --set-charset #{db_name}")
         dump_path = "#{shared_path}/db_upload.tmp.sql"
         upload dump, dump_path
 
         run %{
-          mysql #{remote_db_options} #{real_db_name} < #{dump_path} &&
+          mysql #{remote_db_options} #{remote_db_name} < #{dump_path} &&
           rm #{dump_path}
         }
       end
