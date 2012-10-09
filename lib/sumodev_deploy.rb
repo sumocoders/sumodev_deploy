@@ -105,7 +105,7 @@ configuration.load do
         upload dump, dump_path
 
         run %{
-          mysql #{options} #{real_db_name} < #{dump_path} &&
+          mysql #{remote_db_options} #{real_db_name} < #{dump_path} &&
           rm #{dump_path}
         }
       end
