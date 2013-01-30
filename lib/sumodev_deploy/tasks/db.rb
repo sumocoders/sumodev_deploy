@@ -20,6 +20,11 @@ Capistrano::Configuration.instance.load do
         run "create_db #{db_name}"
       end
 
+      desc "Get database info"
+      task :info, :roles => :db do
+        run "info_db #{db_name}"
+      end
+
       desc "Dump the remote database, and outputs the content so you can pipe it"
       task :dump, :roles => :db do
         run "mysqldump --set-charset #{db_name}" do |ch, stream, out|
@@ -48,22 +53,44 @@ Capistrano::Configuration.instance.load do
         mysql.close
       end
 
-      desc "Get database info"
-      task :info, :roles => :db do
-        run "info_db #{db_name}"
-      end
-
       desc "Imports the database from your local server to the remote one"
       task :put, :roles => :db, :only => {:primary => true} do
-        run "mysqldump --set-charset #{db_name} > #{current_path}/#{release_name}.sql" rescue nil
+        begin
+          run("test ! -f #{db_lockfile}")
+        rescue
+          abort "Database has not been updated because the database has been locked"
+        end
 
-        dump = StringIO.new(run_locally "mysqldump --set-charset #{db_name}")
-        dump_path = "#{shared_path}/db_upload.tmp.sql"
-        upload dump, dump_path
+        force.put
+      end
 
+      namespace :force do
+        desc "Forced export of your local database to the remote server"
+        task :put do
+          run "mysqldump --set-charset #{db_name} > #{current_path}/#{release_name}.sql" rescue nil
+
+          dump = StringIO.new(run_locally "mysqldump --set-charset #{db_name}")
+          dump_path = "#{shared_path}/db_upload.tmp.sql"
+          upload dump, dump_path
+
+          run %{
+            mysql #{remote_db_options} #{remote_db_name} < #{dump_path} &&
+            rm #{dump_path}
+          }
+        end
+      end
+
+      desc "Locks the remote database from pushing"
+      task :lock, :roles => :db, :only => {:primary => true} do
         run %{
-          mysql #{remote_db_options} #{remote_db_name} < #{dump_path} &&
-          rm #{dump_path}
+          echo #{release_name} > #{db_lockfile}
+        }
+      end
+
+      desc "Unlocks the remote database from pushing"
+      task :unlock, :roles => :db, :only => {:primary => true} do
+        run %{
+          rm #{db_lockfile}
         }
       end
     end

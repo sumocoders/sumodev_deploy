@@ -28,6 +28,7 @@ Capistrano::Configuration.instance.load do
   _cset(:app_servers) { production_server || staging_server }
   _cset(:web_servers) { production_server || staging_server }
   _cset(:db_server)   { production_server || staging_server }
+  _cset(:db_lockfile) { "#{shared_path}/db.lock" }
 
   _cset(:user, 'sites')
   _cset(:homedir) { "/home/#{user}/" }
