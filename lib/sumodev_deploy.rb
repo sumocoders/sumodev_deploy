@@ -3,6 +3,7 @@ Capistrano::Configuration.instance.load do
   require 'sumodev_deploy/tasks/errbit'
   require 'sumodev_deploy/tasks/files'
   require 'sumodev_deploy/tasks/redirect'
+  require 'sumodev_deploy/tasks/assets'
 
   def _cset(name, *args, &block)
     unless exists?(name)
