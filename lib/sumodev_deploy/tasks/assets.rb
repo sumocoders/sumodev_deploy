@@ -18,6 +18,8 @@ Capistrano::Configuration.instance.load do
         (assets + sprites).each do |file, filepath|
           upload file, "#{latest_release.shellescape}/#{path}#{filepath}"
         end
+
+        run_locally "rm -rf #{asset_path}"
       end
     end
   end
