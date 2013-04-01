@@ -9,6 +9,7 @@ Capistrano::Configuration.instance.load do
       task :update_api_key, :roles => :app do
         next if fetch(:production_errbit_api_key, "").empty?
         run "if [ -f #{shared_path}/config/library/globals.php ]; then sed -i \"s/define('ERRBIT_API_KEY', '.*');/define('ERRBIT_API_KEY', '#{production_errbit_api_key}');/\" #{shared_path}/config/library/globals.php; fi"
+        run "if [ -f #{shared_path}/config/parameters.yml ]; then sed -i \"s/sumo.errbit_api_key:.*/sumo.errbit_api_key:    #{production_errbit_api_key}/\" #{shared_path}/config/parameters.yml; fi"
       end
       desc "Notify Errbit about a dqeploy"
       task :notify, :roles => :app do
