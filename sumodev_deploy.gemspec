@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.4.3"
+  s.version = "0.4.4"
 
   s.authors = ["Jan De Poorter"]
   s.date = "2012-04-18"
@@ -22,5 +22,8 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "https://github.com/sumocoders/sumodev_deploy"
   s.require_paths = ["lib"]
+
+  s.add_dependency "activesupport"
+  s.add_dependency "capistrano"
 end
 
