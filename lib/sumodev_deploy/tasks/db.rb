@@ -1,10 +1,10 @@
 Capistrano::Configuration.instance.load do
   namespace :sumodev do
     namespace :db do
-      def remote_db_name
+      def remote_db_name_for_stage
         production? && !fetch(:production_db, '').empty? ?
           production_db :
-          db_name
+          remote_db_name
       end
 
       def remote_db_options
@@ -41,7 +41,7 @@ Capistrano::Configuration.instance.load do
         run_locally %{mysqladmin create #{db_name}} rescue nil
 
         mysql = IO.popen("mysql #{db_name}", 'r+')
-        run "mysqldump --set-charset #{remote_db_options} #{remote_db_name}" do |ch, stream, out|
+        run "mysqldump --set-charset #{remote_db_options} #{remote_db_name_for_stage}" do |ch, stream, out|
           if stream == :err
             ch[:options][:logger].send(:important, out, "#{stream} :: #{ch[:server]}" )
           else
@@ -74,7 +74,7 @@ Capistrano::Configuration.instance.load do
           upload dump, dump_path
 
           run %{
-            mysql #{remote_db_options} #{remote_db_name} < #{dump_path} &&
+            mysql #{remote_db_options} #{remote_db_name_for_stage} < #{dump_path} &&
             rm #{dump_path}
           }
         end

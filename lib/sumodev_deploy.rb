@@ -23,6 +23,7 @@ Capistrano::Configuration.instance.load do
   _cset(:project) { abort "sumodev_deploy requires that you set client and project names in your capfile"}
 
   _cset(:db_name) { "#{client[0,8]}_#{project[0,7]}"}
+  _cset(:remote_db_name) { db_name }
 
   _cset(:staging_server, 'dev.sumocoders.be')
   _cset(:production_server, nil)
