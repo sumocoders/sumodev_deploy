@@ -27,6 +27,9 @@ Capistrano::Configuration.instance.load do
 
   _cset(:staging_server, 'dev.sumocoders.be')
   _cset(:production_server, nil)
+  _cset(:staging_url) { "#{project}.#{client}.sumocoders.eu" }
+  _cset(:production_url, nil)
+  _cset(:site_url) { staging? ? staging_url : production_url }
   _cset(:app_servers) { production_server || staging_server }
   _cset(:web_servers) { production_server || staging_server }
   _cset(:db_server)   { production_server || staging_server }
