@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.5.1"
+  s.version = "0.5.2"
 
   s.authors = ["Jan De Poorter"]
   s.date = "2012-04-18"
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "lib/sumodev_deploy/tasks/errbit.rb",
     "lib/sumodev_deploy/tasks/files.rb",
     "lib/sumodev_deploy/tasks/redirect.rb",
+    "lib/sumodev_deploy/tasks/browse.rb",
   ]
   s.homepage = "https://github.com/sumocoders/sumodev_deploy"
   s.require_paths = ["lib"]
