@@ -8,16 +8,9 @@ Capistrano::Configuration.instance.load do
     desc "Compile and upload the JS files"
     task :precompile_js do
       coffee_folders = fetch(:coffee_folders, Dir.glob('**/*.coffee'))
-      unique_coffee_folders = []
-
-      # loop folder so we only have the unique folders left
-      coffee_folders.each do |file|
-        path = File.dirname(file)
-
-        if not unique_coffee_folders.include?(path)
-         unique_coffee_folders.push(path)
-        end
-      end
+      unique_coffee_folders = coffee_folders.map do |file|
+        File.dirname(file)
+      end.uniq
 
       asset_path = fetch(:asset_cache_dir, Dir.pwd + "/cache/cached_assets")
 
