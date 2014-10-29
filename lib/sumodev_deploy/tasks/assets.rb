@@ -1,7 +1,11 @@
 Capistrano::Configuration.instance.load do
   namespace :assets do
-    desc "Compile and upload the CSS files"
+    desc "Compile and upload the assets"
     task :precompile do
+      precompile_css
+    end
+    desc "Compile and upload the CSS files"
+    task :precompile_css do
       require 'compass'
 
       compass = fetch(:compass_command) do
