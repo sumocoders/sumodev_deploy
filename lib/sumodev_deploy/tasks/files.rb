@@ -32,9 +32,9 @@ Capistrano::Configuration.instance.load do
 
       desc "Sync all remote files to your local install"
       task :get, :roles => :app do
-        path = find_folder_in_parents('frontend/files')
+        path = find_folder_in_parents('src/Frontend/Files')
         if !path
-          abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+          abort "No src/Frontend/Files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
           rsync :down, shared_files_path, path, :once => true
         end
@@ -46,9 +46,9 @@ Capistrano::Configuration.instance.load do
         run %{cd #{shared_path} && tar -czf #{current_path}/backup_files.tgz files}
 
         # check if folder exists
-        path = find_folder_in_parents('frontend/files')
+        path = find_folder_in_parents('src/Frontend/Files')
         if !path
-          abort "No frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+          abort "No src/Frontend/Files folder found in this or upper folders. Are you sure you're in a Fork project?"
         else
           rsync :up, "#{path}/", shared_files_path
         end
