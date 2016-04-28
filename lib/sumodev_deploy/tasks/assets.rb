@@ -9,7 +9,7 @@ Capistrano::Configuration.instance.load do
           mkdir -p #{latest_release.shellescape}/src/Frontend/Themes/#{theme}/Core
         }
         upload "./src/Frontend/Themes/#{theme}/Core", "#{latest_release.shellescape}/src/Frontend/Themes/#{theme}/Core"
-      else if File.exist?("gulpfile.js")
+      elsif File.exist?("gulpfile.js")
         run_locally "gulp build"
         run %{
           rm -rf #{latest_release.shellescape}/src/Frontend/Themes/#{theme}/Core &&
