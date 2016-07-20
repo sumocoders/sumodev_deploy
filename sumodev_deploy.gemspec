@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.7.2"
+  s.version = "0.8.0"
 
   s.authors = ["Jan De Poorter"]
   s.date = "2012-04-18"
   s.description = "Deploy to Sumocoders Dev server"
-  s.summary = "Deployment for Fork 3.x.x with Capistrano"
+  s.summary = "Deployment for Fork [3|4].x.x with Capistrano"
   s.email = "info@sumocoders.be"
   # s.extra_rdoc_files = [
   # ]
