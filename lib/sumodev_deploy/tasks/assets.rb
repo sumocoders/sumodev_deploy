@@ -19,6 +19,11 @@ Capistrano::Configuration.instance.load do
       else
         logger.important "No Gruntfile.coffee or gulpfile.js found"
       end
+      if File.exists?("package.json")
+        run_locally "rm -rf temporary_node_modules; mkdir temporary_node_modules; cp package.json temporary_node_modules; cd temporary_node_modules; npm install --production"
+        upload "./temporary_node_modules", "#{latest_release.shellescape}"
+        run_locally "rm -rf temporary_node_modules"
+      end
     end
   end
 end
