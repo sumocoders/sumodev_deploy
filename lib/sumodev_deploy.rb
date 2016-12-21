@@ -43,7 +43,15 @@ Capistrano::Configuration.instance.load do
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
   _cset(:keep_releases) { staging? ? 1 : 3 }
 
-  _cset(:php_bin) { "/usr/bin/php" }
+  _cset(:php_bin) {
+    if staging? && staging_url.include?(".php56.")
+      "/usr/bin/php5"
+    elsif staging? && staging_url.include?(".php70.")
+      "/usr/bin/php7.0"
+    else
+      "/usr/bin/php"
+    end
+  }
 
   set(:application) { project }
   set(:deploy_to) { "#{homedir}#{app_path}"}
