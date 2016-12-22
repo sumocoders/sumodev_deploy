@@ -49,7 +49,7 @@ Capistrano::Configuration.instance.load do
     elsif staging? && staging_url.include?(".php70.")
       "/usr/bin/php7.0"
     else
-      "/usr/bin/php"
+      "php"
     end
   }
 
