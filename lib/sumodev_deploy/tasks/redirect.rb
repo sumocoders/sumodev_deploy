@@ -33,6 +33,19 @@ Capistrano::Configuration.instance.load do
           rm -f #{current_path} &&
           ln -s #{shared_path}/redirect #{current_path}
         }
+
+        # get the PHP version
+        php_version = capture("#{php_bin} -v | grep 'PHP [0-9].[0-9].[0-9]' -o -m1")
+
+        # When the version is higher then 5.5 we should reset the opcache and the statcache
+        if Gem::Version::new(php_version.sub("PHP ", "")) > Gem::Version::new('5.5')
+            run "touch #{document_root}/php-opcache-reset.php"
+            # clearstatcache(true) will clear the file stats cache and the realpath cache
+            # opache_reset will clear the opcache if this is available
+            run "echo \"<?php clearstatcache(true); if (function_exists('opcache_reset')) { opcache_reset(); }\" > #{document_root}/php-opcache-reset.php"
+            run %{ curl #{site_url}/php-opcache-reset.php }
+            run "rm #{document_root}/php-opcache-reset.php"
+        end
       end
     end
   end
