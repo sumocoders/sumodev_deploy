@@ -9,8 +9,6 @@ Gem::Specification.new do |s|
   s.description = "Deploy to Sumocoders Dev server"
   s.summary = "Deployment for Fork [3|4].x.x with Capistrano"
   s.email = "info@sumocoders.be"
-  # s.extra_rdoc_files = [
-  # ]
   s.files = [
     "sumodev_deploy.gemspec",
     "lib/sumodev_deploy.rb",
@@ -25,6 +23,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "activesupport"
-  s.add_dependency "capistrano"
+  s.add_dependency "capistrano", "~> 2.15"
 end
 
