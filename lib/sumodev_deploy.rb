@@ -5,6 +5,7 @@ Capistrano::Configuration.instance.load do
   require 'sumodev_deploy/tasks/redirect'
   require 'sumodev_deploy/tasks/assets'
   require 'sumodev_deploy/tasks/browse'
+  require 'sumodev_deploy/tasks/opcache'
 
   def _cset(name, *args, &block)
     unless exists?(name)
