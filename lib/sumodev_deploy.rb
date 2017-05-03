@@ -44,13 +44,15 @@ Capistrano::Configuration.instance.load do
   _cset(:document_root) { "#{homedir}#{client}/#{project}" }
   _cset(:keep_releases) { staging? ? 1 : 3 }
 
-  _cset(:php_bin) {
+  _cset(:cachetool_connection_string) {
     if staging? && staging_url.include?(".php56.")
-      "/usr/bin/php5"
+      "/var/run/php_fpm_sites.sock"
     elsif staging? && staging_url.include?(".php70.")
-      "/usr/bin/php7.0"
+      "/var/run/php_70_fpm_sites.sock"
+    elsif staging? && staging_url.include?(".php71.")
+      "/var/run/php_71_fpm_sites.sock"
     else
-      "php"
+      "#{fcgi_connection_string}"
     end
   }
 
