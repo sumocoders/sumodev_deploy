@@ -11,5 +11,24 @@ Capistrano::Configuration.instance.load do
         }
       end
     end
+
+    namespace :phpfpm do
+      desc "Installs cachetool.phar to the shared directory"
+      task :install_executable do
+        run %{
+            if [ ! -e #{shared_path}/cachetool.phar ]; then
+              cd #{shared_path};
+              curl -sO http://gordalina.github.io/cachetool/downloads/cachetool.phar;
+              chmod +x cachetool.phar;
+            fi
+        }
+      end
+
+      desc "Reset the opcache with the cachetool.phar"
+      task :reset do
+        opcache.phpfpm.install_executable
+        run %{#{php_bin} #{shared_path}/cachetool.phar opcache:reset --fcgi=#{cachetool_connection_string}}
+      end
+    end
   end
 end
