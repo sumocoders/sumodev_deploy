@@ -1,4 +1,10 @@
 Capistrano::Configuration.instance.load do
+  namespace :opcode do
+    task :clear do
+      opcache.file.reset
+    end
+  end
+
   namespace :opcache do
     namespace :file do
       desc "Reset the opcache thru a PHP-file"
