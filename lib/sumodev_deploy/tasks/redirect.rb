@@ -22,8 +22,8 @@ Capistrano::Configuration.instance.load do
 
         run %{
           mkdir -p #{shared_path}/redirect &&
-          wget --quiet -O #{shared_path}/redirect/index.php http://static.sumocoders.be/redirect/index.phps &&
-          wget --quiet -O #{shared_path}/redirect/.htaccess http://static.sumocoders.be/redirect/htaccess
+          wget --quiet -O #{shared_path}/redirect/index.php https://static.sumocoders.be/redirect2/index.phps &&
+          wget --quiet -O #{shared_path}/redirect/.htaccess https://static.sumocoders.be/redirect2/htaccess
         }
 
         # change the url
