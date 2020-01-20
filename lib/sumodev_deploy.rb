@@ -1,4 +1,5 @@
 Capistrano::Configuration.instance.load do
+  require 'sumodev_deploy/tasks/cache'
   require 'sumodev_deploy/tasks/db'
   require 'sumodev_deploy/tasks/errbit'
   require 'sumodev_deploy/tasks/files'
