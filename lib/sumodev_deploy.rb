@@ -65,6 +65,7 @@ Capistrano::Configuration.instance.load do
   role(:db, :primary => true) { db_server }
 
   after 'deploy', 'deploy:cleanup', 'sumodev:errbit:after_deploy'
+  after 'forkcms:link_configs', 'cache:touch_parameters'
 
   namespace :sumodev do
     namespace :setup do
