@@ -2,18 +2,19 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.10.0"
+  s.version = "0.10.1"
 
-  s.authors = ["Jan De Poorter"]
-  s.date = "2012-04-18"
+  s.authors = ["Tijs Verkoyen"]
+  s.date = "2020-01-29"
   s.description = "Deploy to Sumocoders Dev server"
-  s.summary = "Deployment for Fork [3|4].x.x with Capistrano"
+  s.summary = "..."
   s.email = "info@sumocoders.be"
   s.files = [
     "sumodev_deploy.gemspec",
     "lib/sumodev_deploy.rb",
     "lib/sumodev_deploy/tasks/assets.rb",
     "lib/sumodev_deploy/tasks/browse.rb",
+    "lib/sumodev_deploy/tasks/cache.rb",
     "lib/sumodev_deploy/tasks/db.rb",
     "lib/sumodev_deploy/tasks/errbit.rb",
     "lib/sumodev_deploy/tasks/files.rb",
@@ -26,4 +27,3 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport"
   s.add_dependency "capistrano", "~> 2.15"
 end
-
