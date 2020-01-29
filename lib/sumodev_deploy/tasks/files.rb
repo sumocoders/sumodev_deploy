@@ -19,7 +19,12 @@ Capistrano::Configuration.instance.load do
 
         servers.each do |server|
           host_definition = "#{server.user || user}@#{server.host}"
-          host_definition << ":#{server.port}" if server.port && server.port != 22
+          if server.port && server.port != 22
+            host_definition << ":#{server.port}"
+          elsif ssh_options[:port] && ssh_options[:port] != 22
+            host_definition = " -e 'ssh -p #{ssh_options[:port]}' #{host_definition}"
+          end
+
 
           case direction
           when :down
