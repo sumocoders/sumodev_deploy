@@ -39,10 +39,14 @@ Capistrano::Configuration.instance.load do
       task :get, :roles => :app do
         path = find_folder_in_parents('src/Frontend/Files')
         if !path
-          abort "No src/Frontend/Files folder found in this or upper folders. Are you sure you're in a Fork project?"
-        else
-          rsync :down, shared_files_path, path, :once => true
+          path = find_folder_in_parents('frontend/files')
+
+          if !path
+            abort "No src/Frontend/Files or frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+           end
         end
+
+        rsync :down, shared_files_path, path, :once => true
       end
 
       desc "Sync your local files to the remote server"
@@ -53,10 +57,14 @@ Capistrano::Configuration.instance.load do
         # check if folder exists
         path = find_folder_in_parents('src/Frontend/Files')
         if !path
-          abort "No src/Frontend/Files folder found in this or upper folders. Are you sure you're in a Fork project?"
-        else
-          rsync :up, "#{path}/", shared_files_path
+            path = find_folder_in_parents('frontend/files')
+
+            if !path
+                abort "No src/Frontend/Files or frontend/files folder found in this or upper folders. Are you sure you're in a Fork project?"
+            end
         end
+
+        rsync :up, "#{path}/", shared_files_path
       end
     end
   end
