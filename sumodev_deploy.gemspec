@@ -2,10 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.10.1"
+  s.version = "0.10.2"
 
   s.authors = ["Tijs Verkoyen"]
-  s.date = "2020-01-29"
+  s.date = "2020-01-31"
   s.description = "Deploy to Sumocoders Dev server"
   s.summary = "..."
   s.email = "info@sumocoders.be"
