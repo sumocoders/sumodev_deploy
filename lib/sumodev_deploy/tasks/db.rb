@@ -10,7 +10,7 @@ Capistrano::Configuration.instance.load do
       def remote_db_options
         {:db_host => 'host', :db_username => 'user', :db_password => 'password'}.inject('') do |options, (key, param)|
           value = fetch(key, '')
-          options << "--#{param}=#{value} " unless value.empty?
+          options << "--#{param}='#{value}' " unless value.empty?
           options
         end
       end
