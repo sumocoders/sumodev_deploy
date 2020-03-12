@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "sumodev_deploy"
-  s.version = "0.10.2"
+  s.version = "0.10.3"
 
   s.authors = ["Tijs Verkoyen"]
   s.date = "2020-01-31"
